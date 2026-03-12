@@ -1,0 +1,347 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Payment | Tech Store</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#020617;
+color:white;
+overflow:hidden;
+}
+
+/* Neural Network Canvas */
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:0;
+}
+
+/* Container */
+
+.container{
+position:relative;
+width:420px;
+background:#0f172a;
+padding:30px;
+border-radius:12px;
+box-shadow:0 0 40px rgba(0,0,0,0.7);
+z-index:1;
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+/* Payment Options */
+
+.payment-options{
+display:flex;
+gap:15px;
+margin-bottom:20px;
+}
+
+.option{
+flex:1;
+background:#020617;
+padding:15px;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
+border:2px solid transparent;
+transition:0.3s;
+}
+
+.option:hover{
+border-color:#3b82f6;
+transform:scale(1.03);
+}
+
+.option.active{
+border-color:#3b82f6;
+}
+
+.icon{
+font-size:28px;
+margin-bottom:8px;
+}
+
+.airtel{
+color:#ff0000;
+}
+
+.binance{
+color:#f3ba2f;
+}
+
+/* Instructions */
+
+.instructions{
+background:#020617;
+padding:15px;
+border-radius:10px;
+margin-bottom:15px;
+font-size:14px;
+line-height:1.5;
+}
+
+/* Upload */
+
+input[type=file]{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+background:#020617;
+color:white;
+border:1px solid #1e293b;
+border-radius:6px;
+}
+
+/* Button */
+
+button{
+width:100%;
+padding:12px;
+background:#3b82f6;
+border:none;
+border-radius:8px;
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#2563eb;
+}
+
+#msg{
+margin-top:10px;
+text-align:center;
+}
+
+/* Back */
+
+.back{
+margin-top:15px;
+text-align:center;
+}
+
+a{
+color:#60a5fa;
+text-decoration:none;
+font-size:14px;
+}
+
+a:hover{
+text-decoration:underline;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<canvas id="network"></canvas>
+
+<div class="container">
+
+<h1>Make Payment</h1>
+
+<div class="payment-options">
+
+<div class="option" onclick="selectMethod('airtel')" id="airtelBox">
+<div class="icon airtel">
+<i class="fa-solid fa-mobile-screen"></i>
+</div>
+<p>Airtel Money</p>
+</div>
+
+<div class="option" onclick="selectMethod('binance')" id="binanceBox">
+<div class="icon binance">
+<i class="fa-brands fa-bitcoin"></i>
+</div>
+<p>Binance</p>
+</div>
+
+</div>
+
+<div class="instructions" id="instructions">
+Select a payment method to see instructions.
+</div>
+
+<input type="file" id="screenshot" accept="image/*">
+
+<button onclick="submitPayment()">Submit Payment</button>
+
+<p id="msg"></p>
+
+<div class="back">
+<a href="index.html">← Back to Home</a>
+</div>
+
+</div>
+
+<script>
+
+/* Payment Logic */
+
+let method=null;
+
+function selectMethod(m){
+
+method=m;
+
+document.getElementById("airtelBox").classList.remove("active");
+document.getElementById("binanceBox").classList.remove("active");
+
+if(m==="airtel"){
+
+document.getElementById("airtelBox").classList.add("active");
+
+document.getElementById("instructions").innerHTML=
+`
+<strong>Airtel Money Payment</strong><br><br>
+Send payment to:<br>
+<b>+254781103969</b><br><br>
+Upload the payment screenshot after sending.
+`;
+
+}
+
+if(m==="binance"){
+
+document.getElementById("binanceBox").classList.add("active");
+
+document.getElementById("instructions").innerHTML=
+`
+<strong>Binance Crypto Payment</strong><br><br>
+Send using Binance Pay:<br>
+<b>UID: 1194887816</b><br><br>
+Upload the payment screenshot after sending.
+`;
+
+}
+
+}
+
+function submitPayment(){
+
+const file=document.getElementById("screenshot").files[0];
+const msg=document.getElementById("msg");
+
+if(!method){
+msg.innerText="Please select a payment method";
+msg.style.color="red";
+return;
+}
+
+if(!file){
+msg.innerText="Please upload payment screenshot";
+msg.style.color="red";
+return;
+}
+
+msg.style.color="lime";
+msg.innerText="Payment submitted successfully";
+
+}
+
+/* Neural Network Background */
+
+const canvas = document.getElementById("network");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let nodes = [];
+
+for(let i=0;i<80;i++){
+nodes.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+vx:(Math.random()-0.5)*0.6,
+vy:(Math.random()-0.5)*0.6
+});
+}
+
+function animate(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+for(let i=0;i<nodes.length;i++){
+
+let n = nodes[i];
+
+n.x += n.vx;
+n.y += n.vy;
+
+if(n.x<0 || n.x>canvas.width) n.vx *= -1;
+if(n.y<0 || n.y>canvas.height) n.vy *= -1;
+
+ctx.beginPath();
+ctx.arc(n.x,n.y,2,0,Math.PI*2);
+ctx.fillStyle="#3b82f6";
+ctx.fill();
+
+for(let j=i+1;j<nodes.length;j++){
+
+let n2 = nodes[j];
+
+let dx=n.x-n2.x;
+let dy=n.y-n2.y;
+
+let dist=Math.sqrt(dx*dx+dy*dy);
+
+if(dist<120){
+
+ctx.beginPath();
+ctx.moveTo(n.x,n.y);
+ctx.lineTo(n2.x,n2.y);
+
+ctx.strokeStyle="rgba(59,130,246,0.2)";
+ctx.lineWidth=1;
+ctx.stroke();
+
+}
+
+}
+
+}
+
+requestAnimationFrame(animate);
+
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
